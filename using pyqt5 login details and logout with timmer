@@ -1,0 +1,61 @@
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QMessageBox, QVBoxLayout, QMainWindow, QTimer
+from PyQt5.QtCore import Qt
+
+class LoginWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Login")
+        self.setGeometry(100, 100, 300, 150)
+        self.username_input = QLineEdit(self)
+        self.password_input = QLineEdit(self)
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.login_button = QPushButton("Login", self)
+        self.login_button. clicked.connect(self.check_login)
+        self.attempts = 0
+
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Username:"))
+        layout.addWidget(self.username_input)
+        layout.addWidget(QLabel("Password:"))
+        layout.addWidget(self.password_input)
+        layout.addWidget(self.login_button)
+        self.setLayout(layout)
+
+    def check_login(self):
+        username = self.username_input.text()
+        password = self.password_input.text()
+
+        if username == "manoj" and password == "123@123":
+            self.close()
+            self.open_main_app(username)
+        else:
+            self.attempts += 1
+            if self.attempts >= 3:
+                self.login_button.setEnabled(False)
+            QMessageBox.warning(self, "Login Failed", "Incorrect username or password.")
+            QMessageBox.warning(self, "Login Failed", "Incorrect password.")
+
+    def open_main_app(self, username):
+        self.main_app = MainWindow(username)
+        self.main_app.show()
+
+class MainWindow(QMainWindow):
+    def __init__(self, username):
+        super()._init_()
+        self.setWindowTitle("Main Application")
+        self.setGeometry(100, 100, 400, 300)
+        self.statusBar().showMessage(f"Logged in as {username}")
+        self.logout_timer = QTimer(self)
+        self.logout_timer.timeout.connect(self.logout)
+        self.logout_timer.start(600000)  # 10 minutes in milliseconds
+
+    def logout(self):
+        self.logout_timer.stop()
+        self.close()
+
+if __name__ == "_main_":
+    app = QApplication(sys.argv)
+    login_window = LoginWindow()
+    login_window.show()
+    sys.exit(app.exec_()) 
